@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>초등 점자 배움터 - 한글 점자 번역기</title>
+  <!-- Tailwind CSS CDN 로드 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Pretendard', sans-serif;
+    }
+    /* 인쇄 시 깔끔한 출력을 위한 스타일 */
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+      body {
+        background: white;
+        color: black;
+      }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col items-center p-4 sm:p-6 lg:p-8">
+
+  <!-- 상단 헤더 영역 -->
+  <header class="w-full max-w-4xl text-center mb-6">
+    <div class="inline-flex items-center gap-2 bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm font-semibold mb-2 shadow-sm">
+      <span>🎒 장애이해교육</span>
+      <span>•</span>
+      <span>육사반 점자 배움터</span>
+    </div>
+    <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+      한글 6점 점자 번역 확인기
+    </h1>
+    <p class="text-sm sm:text-base text-slate-600 mt-1">
+      이름이나 단어를 넣으면 <span class="font-bold text-slate-900">초성 · 중성 · 종성</span> 순서로 6점 점자(● / ○) 배치를 한눈에 보여줍니다.
+    </p>
+  </header>
+
+  <!-- 입력 및 컨트롤 패널 -->
+  <main class="w-full max-w-4xl flex flex-col gap-5">
+    <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6 no-print">
+      <div class="flex flex-col sm:flex-row gap-3">
+        <div class="relative flex-1">
+          <input 
+            type="text" 
+            id="textInput" 
+            maxlength="20"
+            placeholder="이름이나 단어를 입력하세요 (예: 김하늘, 행복, 무지개)" 
+            class="w-full text-lg sm:text-xl font-medium px-4 py-3 rounded-xl border-2 border-indigo-200 focus:border-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-100 transition-all placeholder:text-slate-400"
+            autofocus
+          >
+          <button 
+            id="clearBtn" 
+            title="지우기"
+            class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1.5 rounded-full hover:bg-slate-100 text-sm font-bold"
+          >
+            ✕
+          </button>
+        </div>
+        <button 
+          id="translateBtn"
+          class="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold px-6 py-3 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-base"
+        >
+          <span>점자 변환</span>
+        </button>
+      </div>
+
+      <!-- 옵션 및 힌트 단어 바 -->
+      <div class="mt-4 pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm text-slate-600">
+        <div class="flex items-center gap-4">
+          <label class="inline-flex items-center gap-1.5 cursor-pointer select-none font-medium text-slate-700">
+            <input type="checkbox" id="showNumbersCheck" checked class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300">
+            <span>점 위치 번호(1~6) 표시</span>
+          </label>
+          <div class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-xs font-semibold">
+            <span>✓ 표준 점자 규정 적용 (초성 'ㅇ' 생략)</span>
+          </div>
+        </div>
+
+        <!-- 자주 쓰는 예시 단어 칩 -->
+        <div class="flex items-center gap-1.5 flex-wrap">
+          <span class="text-slate-400 text-xs">예시:</span>
+          <button class="sample-chip px-2.5 py-1 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-700 text-xs font-semibold transition-colors" data-word="변호석">변호석</button>
+          <button class="sample-chip px-2.5 py-1 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-700 text-xs font-semibold transition-colors" data-word="새롬초">새롬초</button>
+          <button class="sample-chip px-2.5 py-1 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-700 text-xs font-semibold transition-colors" data-word="육사반">육사반</button>
+          <button class="sample-chip px-2.5 py-1 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-700 text-xs font-semibold transition-colors" data-word="행복">행복</button>
+          <button class="sample-chip px-2.5 py-1 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-700 text-xs font-semibold transition-colors" data-word="사랑">사랑</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 점자 읽는 방법 미니 가이드 박스 -->
+    <section class="bg-indigo-50/70 border border-indigo-100 rounded-xl p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs sm:text-sm text-indigo-950">
+      <div class="flex items-center gap-2.5">
+        <div class="bg-white border border-indigo-200 p-1.5 rounded-lg flex items-center gap-1 shadow-sm">
+          <div class="flex flex-col items-center">
+            <span class="text-[10px] text-slate-500">1</span>
+            <div class="w-3 h-3 rounded-full bg-slate-900"></div>
+            <span class="text-[10px] text-slate-500">2</span>
+            <div class="w-3 h-3 rounded-full border border-slate-300 bg-white"></div>
+            <span class="text-[10px] text-slate-500">3</span>
+            <div class="w-3 h-3 rounded-full border border-slate-300 bg-white"></div>
+          </div>
+          <div class="flex flex-col items-center">
+            <span class="text-[10px] text-slate-500">4</span>
+            <div class="w-3 h-3 rounded-full border border-slate-300 bg-white"></div>
+            <span class="text-[10px] text-slate-500">5</span>
+            <div class="w-3 h-3 rounded-full bg-slate-900"></div>
+            <span class="text-[10px] text-slate-500">6</span>
+            <div class="w-3 h-3 rounded-full border border-slate-300 bg-white"></div>
+          </div>
+        </div>
+        <div>
+          <p class="font-bold">6점 점자의 기본 번호 순서</p>
+          <p class="text-slate-600 text-xs mt-0.5">왼쪽 위부터 아래로 1, 2, 3번 / 오른쪽 위부터 아래로 4, 5, 6번</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3 text-xs bg-white px-3 py-1.5 rounded-lg border border-indigo-100">
+        <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-slate-900 inline-block"></span> <strong>● 찍힌 점</strong></span>
+        <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full border border-slate-400 bg-white inline-block"></span> <strong>○ 안 찍힌 점</strong></span>
+      </div>
+    </section>
+
+    <!-- 점자 번역 결과 컨테이너 -->
+    <section id="resultContainer" class="flex flex-col gap-6">
+      <!-- 자바스크립트로 결과 카드가 여기에 렌더링됩니다 -->
+    </section>
+  </main>
+
+  <script>
+    // 점 번호 위치 정의:
+    // 1 4
+    // 2 5
+    // 3 6
+
+    // 초성 점자 데이터
+    const CHO_BRAILLE = {
+      'ㄱ': [4],
+      'ㄴ': [1, 4],
+      'ㄷ': [2, 4],
+      'ㄹ': [5],
+      'ㅁ': [1, 5],
+      'ㅂ': [4, 5],
+      'ㅅ': [6],
+      'ㅇ': [], // 초성 ㅇ은 기본적으로 무음(점 없음)
+      'ㅈ': [4, 6],
+      'ㅊ': [5, 6],
+      'ㅋ': [1, 2, 4],
+      'ㅌ': [1, 2, 5],
+      'ㅍ': [1, 4, 5],
+      'ㅎ': [2, 4, 5],
+      // 된소리: 된소리표(6번) + 해당 자음
+      'ㄲ': [[6], [4]],
+      'ㄸ': [[6], [2, 4]],
+      'ㅃ': [[6], [4, 5]],
+      'ㅆ': [[6], [6]],
+      'ㅉ': [[6], [4, 6]]
+    };
+
+    // 중성(모음) 점자 데이터
+    const JUNG_BRAILLE = {
+      'ㅏ': [1, 2, 6],
+      'ㅑ': [3, 4, 5],
+      'ㅓ': [2, 3, 4],
+      'ㅕ': [1, 5, 6],
+      'ㅗ': [1, 3, 6],
+      'ㅛ': [3, 4, 6],
+      'ㅜ': [1, 2, 4],
+      'ㅠ': [1, 4, 6],
+      'ㅡ': [2, 4, 6],
+      'ㅣ': [1, 3, 5],
+      'ㅐ': [1, 2, 3, 5],
+      'ㅔ': [1, 3, 4, 5],
+      'ㅒ': [[3, 4, 5], [1, 2, 3, 5]], // ㅑ + ㅐ
+      'ㅖ': [3, 4],
+      'ㅘ': [1, 2, 3, 6],
+      'ㅙ': [[1, 2, 3, 6], [1, 2, 3, 5]], // ㅘ + ㅐ
+      'ㅚ': [1, 3, 4, 5, 6],
+      'ㅝ': [1, 2, 3, 4],
+      'ㅞ': [[1, 2, 3, 4], [1, 2, 3, 5]], // ㅝ + ㅐ
+      'ㅟ': [[1, 2, 4], [1, 2, 3, 5]],     // ㅜ + ㅐ
+      'ㅢ': [2, 4, 5, 6]
+    };
+
+    // 종성(받침) 점자 데이터
+    const JONG_BRAILLE = {
+      'ㄱ': [1],
+      'ㄴ': [2, 5],
+      'ㄷ': [3, 5],
+      'ㄹ': [2],
+      'ㅁ': [2, 6],
+      'ㅂ': [1, 2],
+      'ㅅ': [3],
+      'ㅇ': [2, 3, 5, 6],
+      'ㅈ': [1, 3],
+      'ㅊ': [2, 3],
+      'ㅋ': [2, 3, 5],
+      'ㅌ': [2, 3, 6],
+      'ㅍ': [2, 5, 6],
+      'ㅎ': [3, 5, 6],
+      // 쌍받침 및 겹받침
+      'ㄲ': [[1], [1]],
+      'ㄳ': [[1], [3]],
+      'ㄵ': [[2, 5], [1, 3]],
+      'ㄶ': [[2, 5], [3, 5, 6]],
+      'ㄺ': [[2], [1]],
+      'ㄻ': [[2], [2, 6]],
+      'ㄼ': [[2], [1, 2]],
+      'ㄽ': [[2], [3]],
+      'ㄾ': [[2], [2, 3, 6]],
+      'ㄿ': [[2], [2, 5, 6]],
+      'ㅀ': [[2], [3, 5, 6]],
+      'ㅄ': [[1, 2], [3]],
+      'ㅆ': [3, 4]
+    };
+
+    // 한글 분해용 초/중/종성 배열
+    const CHO_LIST = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+    const JUNG_LIST = ['ㅏ','ㅐ','ㅑ','ㅒ','ㅓ','ㅔ','ㅕ','ㅖ','ㅗ','ㅘ','ㅙ','ㅚ','ㅛ','ㅜ','ㅝ','ㅞ','ㅟ','ㅠ','ㅡ','ㅢ','ㅣ'];
+    const JONG_LIST = ['','ㄱ','ㄲ','ㄳ','ㄴ','ㄵ','ㄶ','ㄷ','ㄹ','ㄺ','ㄻ','ㄼ','ㄽ','ㄾ','ㄿ','ㅀ','ㅁ','ㅂ','ㅄ','ㅅ','ㅆ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+
+    /**
+     * 한글 한 글자를 초성, 중성, 종성으로 분해
+     */
+    function decomposeHangul(char) {
+      const code = char.charCodeAt(0);
+      if (code >= 0xAC00 && code <= 0xD7A3) {
+        const delta = code - 0xAC00;
+        const choIdx = Math.floor(delta / 588);
+        const jungIdx = Math.floor((delta % 588) / 28);
+        const jongIdx = delta % 28;
+        return {
+          char,
+          cho: CHO_LIST[choIdx],
+          jung: JUNG_LIST[jungIdx],
+          jong: JONG_LIST[jongIdx]
+        };
+      }
+      return { char, isNonHangul: true };
+    }
+
+    /**
+     * 6점 점자 셀(2열 3행) HTML 생성 함수
+     * @param {Array<number>} activeDots - 찍힌 점 목록 (예: [1, 2, 6])
+     * @param {string} label - 자모음 라벨 (예: 'ㄱ')
+     * @param {string} roleName - 역할명 (초성, 중성, 종성, 된소리표 등)
+     * @param {boolean} showNumbers - 점 번호 표시 여부
+     * @param {string} note - 추가 설명 툴팁
+     */
+    function renderBrailleBox(activeDots, label, roleName, showNumbers, note = '') {
+      // 2열 3행 매핑
+      // 왼쪽 열: 1, 2, 3
+      // 오른쪽 열: 4, 5, 6
+      const leftCol = [1, 2, 3];
+      const rightCol = [4, 5, 6];
+
+      function renderDot(dotNum) {
+        const isActive = activeDots.includes(dotNum);
+        return `
+          <div class="relative flex items-center justify-center">
+            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-all ${
+              isActive 
+                ? 'bg-slate-900 border-2 border-slate-900 shadow-inner' 
+                : 'bg-white border-2 border-slate-300'
+            }">
+              ${showNumbers ? `<span class="text-[10px] font-bold ${isActive ? 'text-slate-200 opacity-90' : 'text-slate-400'}">${dotNum}</span>` : ''}
+            </div>
+          </div>
+        `;
+      }
+
+      // 역할에 따른 배지 색상
+      let badgeClass = 'bg-blue-100 text-blue-800';
+      if (roleName.includes('중성')) badgeClass = 'bg-emerald-100 text-emerald-800';
+      if (roleName.includes('종성')) badgeClass = 'bg-amber-100 text-amber-800';
+      if (roleName.includes('된소리')) badgeClass = 'bg-purple-100 text-purple-800';
+
+      const dotCount = activeDots.length;
+
+      return `
+        <div class="flex flex-col items-center bg-white border border-slate-200 rounded-xl p-3 shadow-sm hover:shadow transition-shadow min-w-[95px]">
+          <!-- 역할 태그 -->
+          <span class="text-[11px] font-bold px-2 py-0.5 rounded-full ${badgeClass} mb-1">
+            ${roleName}
+          </span>
+          <!-- 자모음 라벨 -->
+          <div class="text-base font-extrabold text-slate-800 h-6 flex items-center">
+            ${label}
+          </div>
+          <!-- 6점 셀 (2x3 그리드) -->
+          <div class="bg-slate-50 border border-slate-200 rounded-lg p-2.5 my-2 flex gap-2">
+            <!-- 1, 2, 3열 -->
+            <div class="flex flex-col gap-2">
+              ${leftCol.map(renderDot).join('')}
+            </div>
+            <!-- 4, 5, 6열 -->
+            <div class="flex flex-col gap-2">
+              ${rightCol.map(renderDot).join('')}
+            </div>
+          </div>
+          <!-- 점 번호 리스트 안내 -->
+          <div class="text-[11px] text-slate-500 font-medium text-center">
+            ${dotCount === 0 ? '<span class="text-slate-400 italic">빈 칸</span>' : `${activeDots.sort((a,b)=>a-b).join(', ')}번 점`}
+          </div>
+          ${note ? `<div class="text-[10px] text-indigo-600 mt-1 font-semibold text-center">${note}</div>` : ''}
+        </div>
+      `;
+    }
+
+    /**
+     * 메인 번역 및 결과 렌더링 함수
+     */
+    function translateAndRender() {
+      const inputEl = document.getElementById('textInput');
+      const container = document.getElementById('resultContainer');
+      const showNumbers = document.getElementById('showNumbersCheck').checked;
+      const useStandardRule = true; // 표준 점자 규칙 무조건 작동
+      const text = inputEl.value.trim();
+
+      if (!text) {
+        container.innerHTML = `
+          <div class="bg-white rounded-2xl border border-dashed border-slate-300 p-8 text-center text-slate-400">
+            <p class="text-base sm:text-lg font-medium">단어나 이름을 입력하면 여기에 초성·중성·종성 점자가 표시됩니다.</p>
+            <p class="text-xs sm:text-sm text-slate-400 mt-1">예: 친구 이름, '행복', '우리학교' 등</p>
+          </div>
+        `;
+        return;
+      }
+
+      let html = '';
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+
+        if (char === ' ') {
+          // 띄어쓰기 칸
+          html += `
+            <div class="bg-slate-100/80 border border-dashed border-slate-300 rounded-2xl p-4 flex items-center justify-center gap-3">
+              <span class="text-sm font-bold text-slate-500">[ 띄어쓰기 ␣ ]</span>
+              <span class="text-xs text-slate-400">실제 점자에서는 한 칸을 완전히 비웁니다.</span>
+            </div>
+          `;
+          continue;
+        }
+
+        const decomp = decomposeHangul(char);
+
+        if (decomp.isNonHangul) {
+          // 한글이 아닌 문자 (숫자, 기호 등)
+          html += `
+            <div class="bg-white border border-slate-200 rounded-2xl p-4 flex items-center gap-3 shadow-sm">
+              <span class="text-xl font-bold bg-slate-100 px-3 py-1 rounded-lg">${char}</span>
+              <span class="text-xs text-slate-500">한글 자음/모음이 아닌 글자는 한글 6점 분해 대상에서 제외됩니다.</span>
+            </div>
+          `;
+          continue;
+        }
+
+        const { cho, jung, jong } = decomp;
+
+        // 초성 점자 구하기
+        let choBoxesHtml = '';
+        const choData = CHO_BRAILLE[cho] || [];
+        
+        if (cho === 'ㅇ') {
+          choBoxesHtml = `
+            <div class="flex flex-col items-center justify-center bg-slate-50 border border-dashed border-slate-300 rounded-xl p-3 min-w-[95px] text-center">
+              <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 mb-1">초성</span>
+              <span class="text-base font-extrabold text-slate-400">ㅇ</span>
+              <div class="text-[11px] text-slate-400 mt-2 font-medium leading-tight">소리값 없음<br>(생략)</div>
+            </div>
+          `;
+        } else if (Array.isArray(choData[0])) {
+          // 된소리 (예: ㄲ = 6번표 + 4번)
+          choBoxesHtml += renderBrailleBox(choData[0], '된소리표', '기호', showNumbers);
+          choBoxesHtml += renderBrailleBox(choData[1], cho, '초성', showNumbers);
+        } else {
+          choBoxesHtml += renderBrailleBox(choData, cho, '초성', showNumbers);
+        }
+
+        // 중성 점자 구하기
+        let jungBoxesHtml = '';
+        const jungData = JUNG_BRAILLE[jung] || [];
+        if (Array.isArray(jungData[0])) {
+          // 이중모음 등 2칸짜리
+          jungBoxesHtml += renderBrailleBox(jungData[0], jung + ' ①', '중성', showNumbers);
+          jungBoxesHtml += renderBrailleBox(jungData[1], jung + ' ②', '중성', showNumbers);
+        } else {
+          jungBoxesHtml += renderBrailleBox(jungData, jung, '중성', showNumbers);
+        }
+
+        // 종성(받침) 점자 구하기
+        let jongBoxesHtml = '';
+        if (jong) {
+          const jongData = JONG_BRAILLE[jong] || [];
+          if (Array.isArray(jongData[0])) {
+            jongBoxesHtml += renderBrailleBox(jongData[0], jong + ' ①', '종성', showNumbers);
+            jongBoxesHtml += renderBrailleBox(jongData[1], jong + ' ②', '종성', showNumbers);
+          } else {
+            jongBoxesHtml += renderBrailleBox(jongData, jong, '종성', showNumbers);
+          }
+        }
+
+        // 글자별 카드 구성
+        html += `
+          <div class="bg-white rounded-2xl border-2 border-indigo-100 p-4 sm:p-5 shadow-sm">
+            <!-- 글자 제목 헤더 -->
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+              <div class="flex items-center gap-3">
+                <span class="text-2xl sm:text-3xl font-black text-indigo-700 bg-indigo-50 border border-indigo-200 px-3 py-1 rounded-xl shadow-inner">
+                  ${char}
+                </span>
+                <div>
+                  <span class="text-xs sm:text-sm font-semibold text-slate-500">
+                    분해: 
+                    <strong class="text-slate-800">${cho}</strong>(초성) + 
+                    <strong class="text-slate-800">${jung}</strong>(중성)
+                    ${jong ? ` + <strong class="text-slate-800">${jong}</strong>(종성)` : ''}
+                  </span>
+                  <p class="text-[11px] text-slate-400">가로 순서대로 손끝으로 더듬어 읽습니다.</p>
+                </div>
+              </div>
+              <span class="text-xs font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-lg">
+                ${i + 1}번째 글자
+              </span>
+            </div>
+
+            <!-- 초성, 중성, 종성 가로 나열 영역 -->
+        <div class="flex items-stretch gap-2.5 overflow-x-auto pb-2 pt-1">
+          ${choBoxesHtml}
+          <div class="flex items-center text-slate-300 font-bold text-lg select-none">→</div>
+          ${jungBoxesHtml}
+          ${jong ? `
+            <div class="flex items-center text-slate-300 font-bold text-lg select-none">→</div>
+            ${jongBoxesHtml}
+          ` : ''}
+        </div>
+      </div>
+    `;
+  }
+
+  // 모든 글자의 점자를 가로로 연속해서 보여주는 전체 스트립 생성
+  let stripCellsHtml = '';
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    if (char === ' ') {
+      // 띄어쓰기: 1칸 공백 셀
+      stripCellsHtml += `
+        <div class="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-100/80 border border-dashed border-slate-300 min-w-[54px] self-stretch">
+          <span class="text-[11px] font-bold text-slate-400">띄어쓰기</span>
+          <span class="text-[10px] text-slate-300 mt-1">␣</span>
+        </div>
+      `;
+      continue;
+    }
+
+    const decomp = decomposeHangul(char);
+    if (decomp.isNonHangul) {
+      stripCellsHtml += `
+        <div class="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-100 border border-slate-200 min-w-[54px] self-stretch">
+          <span class="text-sm font-bold text-slate-700">${char}</span>
+        </div>
+      `;
+      continue;
+    }
+
+    const { cho, jung, jong } = decomp;
+    const charDotsList = [];
+
+    // 초성
+    const choData = CHO_BRAILLE[cho] || [];
+    if (cho === 'ㅇ') {
+      // 표준 점자 규칙 무조건 적용: 초성 ㅇ은 점자 칸을 만들지 않고 생략
+    } else if (Array.isArray(choData[0])) {
+      charDotsList.push({ dots: choData[0], label: '된', role: '기호' });
+      charDotsList.push({ dots: choData[1], label: cho, role: '초' });
+    } else {
+      charDotsList.push({ dots: choData, label: cho, role: '초' });
+    }
+
+    // 중성
+    const jungData = JUNG_BRAILLE[jung] || [];
+    if (Array.isArray(jungData[0])) {
+      charDotsList.push({ dots: jungData[0], label: jung + '①', role: '중' });
+      charDotsList.push({ dots: jungData[1], label: jung + '②', role: '중' });
+    } else {
+      charDotsList.push({ dots: jungData, label: jung, role: '중' });
+    }
+
+    // 종성
+    if (jong) {
+      const jongData = JONG_BRAILLE[jong] || [];
+      if (Array.isArray(jongData[0])) {
+        charDotsList.push({ dots: jongData[0], label: jong + '①', role: '종' });
+        charDotsList.push({ dots: jongData[1], label: jong + '②', role: '종' });
+      } else {
+        charDotsList.push({ dots: jongData, label: jong, role: '종' });
+      }
+    }
+
+    // 글자 단위 묶음 박스
+    const cellBoxesHtml = charDotsList.map(item => {
+      const leftCol = [1, 2, 3];
+      const rightCol = [4, 5, 6];
+      const dotItemHtml = (num) => {
+        const isActive = item.dots.includes(num);
+        return `
+          <div class="w-4 h-4 rounded-full flex items-center justify-center transition-all ${
+            isActive 
+              ? 'bg-slate-900 border border-slate-900 shadow-sm' 
+              : 'bg-white border border-slate-300'
+          }">
+            ${showNumbers ? `<span class="text-[8px] font-bold ${isActive ? 'text-slate-100' : 'text-slate-400'}">${num}</span>` : ''}
+          </div>
+        `;
+      };
+
+      let badgeBg = 'bg-blue-100 text-blue-700';
+      if (item.role === '중') badgeBg = 'bg-emerald-100 text-emerald-700';
+      if (item.role === '종') badgeBg = 'bg-amber-100 text-amber-700';
+      if (item.role === '기호') badgeBg = 'bg-purple-100 text-purple-700';
+
+      return `
+        <div class="flex flex-col items-center bg-white border border-slate-200 rounded-lg p-1.5 shadow-sm min-w-[48px]">
+          <span class="text-[9px] font-bold px-1 rounded ${badgeBg} leading-tight">${item.label}</span>
+          <div class="bg-slate-50 border border-slate-200 rounded p-1 my-1 flex gap-1">
+            <div class="flex flex-col gap-1">${leftCol.map(dotItemHtml).join('')}</div>
+            <div class="flex flex-col gap-1">${rightCol.map(dotItemHtml).join('')}</div>
+          </div>
+          <span class="text-[9px] text-slate-500 font-semibold">${item.dots.length ? item.dots.sort((a,b)=>a-b).join(',') : '-'}</span>
+        </div>
+      `;
+    }).join('');
+
+    stripCellsHtml += `
+      <div class="flex flex-col items-center bg-indigo-50/50 border-2 border-indigo-200 rounded-xl p-2 shrink-0">
+        <span class="text-xs font-black text-indigo-700 mb-1.5 px-2 py-0.5 bg-white rounded-md border border-indigo-200 shadow-sm">
+          ${char}
+        </span>
+        <div class="flex items-center gap-1.5">
+          ${cellBoxesHtml}
+        </div>
+      </div>
+    `;
+  }
+
+  const fullStripSectionHtml = `
+    <div class="bg-gradient-to-r from-slate-900 to-indigo-950 text-white rounded-2xl p-4 sm:p-6 shadow-lg mt-2">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-indigo-800/80 pb-3 mb-4">
+        <div>
+          <div class="inline-flex items-center gap-2">
+            <span class="bg-indigo-500/30 text-indigo-300 text-xs font-bold px-2 py-0.5 rounded-full border border-indigo-400/30">
+              최종 결과물
+            </span>
+            <h3 class="text-lg sm:text-xl font-bold tracking-tight text-white">
+              전체 점자 이어서 보기 (실제 읽는 순서)
+            </h3>
+          </div>
+          <p class="text-xs sm:text-sm text-slate-300 mt-1">
+            왼쪽에서 오른쪽으로 손가락을 이동하며 읽는 전체 6점 점자 연속 배치입니다. (가로 스크롤 가능)
+          </p>
+        </div>
+        <div class="text-xs font-medium text-indigo-200 bg-white/10 px-3 py-1.5 rounded-lg shrink-0 self-start sm:self-auto border border-white/10">
+          좌 → 우 방향 연속 읽기
+        </div>
+      </div>
+
+      <!-- 가로 스크롤 가능한 점자 스트립 컨테이너 -->
+      <div class="overflow-x-auto pb-3 pt-1">
+        <div class="inline-flex items-stretch gap-2.5 min-w-full">
+          ${stripCellsHtml}
+        </div>
+      </div>
+    </div>
+  `;
+
+  html += fullStripSectionHtml;
+
+  container.innerHTML = html;
+}
+
+// 이벤트 바인딩
+    window.onload = function() {
+      const input = document.getElementById('textInput');
+      const translateBtn = document.getElementById('translateBtn');
+      const clearBtn = document.getElementById('clearBtn');
+      const showNumbersCheck = document.getElementById('showNumbersCheck');
+      const sampleChips = document.querySelectorAll('.sample-chip');
+
+      // 입력 시 실시간 번역
+      input.addEventListener('input', () => {
+        if (input.value.length > 0) {
+          clearBtn.classList.remove('hidden');
+        } else {
+          clearBtn.classList.add('hidden');
+        }
+        translateAndRender();
+      });
+
+      // 번역 버튼 클릭
+      translateBtn.addEventListener('click', translateAndRender);
+
+      // 클리어 버튼
+      clearBtn.addEventListener('click', () => {
+        input.value = '';
+        clearBtn.classList.add('hidden');
+        input.focus();
+        translateAndRender();
+      });
+
+      // 체크박스 변경 시 즉시 갱신
+      showNumbersCheck.addEventListener('change', translateAndRender);
+
+      // 예시 칩 클릭 시 적용
+      sampleChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+          input.value = chip.getAttribute('data-word');
+          clearBtn.classList.remove('hidden');
+          translateAndRender();
+        });
+      });
+
+      // 엔터키 지원
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          translateAndRender();
+        }
+      });
+
+      // 기본 초기값 실행
+      input.value = '변호석';
+      clearBtn.classList.remove('hidden');
+      translateAndRender();
+    };
+  </script>
+</body>
+</html>
